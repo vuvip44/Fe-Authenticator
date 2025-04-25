@@ -1,0 +1,33 @@
+.userMenu {
+  position: absolute;
+  top: 100%;                 // Nằm ngay bên dưới icon container
+  left: 50%;                 // Căn giữa theo chiều ngang
+  transform: translateX(-50%); // Dịch trái 50% chiều rộng menu để đúng giữa
+  margin-top: 8px;           // Tạo khoảng cách dưới icon
+
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+
+  a,
+  .logoutBtn {
+    margin: 5px 0;
+    text-decoration: none;
+    color: #333;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+
+    &:hover {
+      color: #007bff;
+    }
+  }
+}
