@@ -10,15 +10,15 @@ const HomePage = () => {
     <div className={homepage}>
       <Header />
       <div className={content}>
-        <h1>Welcome to MyApp!</h1>
-        <p>This is your homepage.</p>
+        <h1>Hello World</h1>
+        
       </div>
       <button
           onClick={() =>
             checkAccessAndNavigate({
-              endpoint: "/result/user", // API check quyền
+              endpoint: "/result/user", 
               navigate,
-              successPath: "/role-user", // Chuyển trang khi có quyền
+              successPath: "/role-user", 
             })
           }
         >
@@ -28,7 +28,7 @@ const HomePage = () => {
         <button
           onClick={() =>
             checkAccessAndNavigate({
-              endpoint: "/result/admin", // API check quyền
+              endpoint: "/result/admin",
               navigate,
               successPath: "/role-admin",
               fallbackMessage: "Chỉ admin mới được truy cập trang này!",
