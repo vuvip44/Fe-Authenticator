@@ -1,22 +1,18 @@
-// src/redux/slices/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import authApi from "../../api/authApi"; 
+import authApi from "../../api/authApi";
 
 // API: Login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await authApi.login(formData);
+      const response = await authApi.login(formData); // Gọi API đăng nhập
       const { accessToken } = response.data.data;
-
       
-      
-
-      return response.data.data;
+      return response.data.data; // Trả về thông tin người dùng và token
     } catch (error) {
       console.log("Login error:", error.response?.data);
-      return rejectWithValue(error.response?.data?.Message || "Login failed");
+      return rejectWithValue(error.response?.data?.Message || "Login failed"); // Trả về lỗi nếu có
     }
   }
 );
@@ -27,7 +23,7 @@ export const refreshUserToken = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await authApi.refreshToken();  // Gửi yêu cầu làm mới token tới backend
-      return response.data.data;
+      return response.data.data; // Trả về thông tin token mới
     } catch (error) {
       console.log("Refresh token error:", error.response?.data);
       return rejectWithValue(error.response?.data?.message || "Failed to refresh token");
@@ -40,10 +36,9 @@ export const getCurrentUser = createAsyncThunk(
   "auth/getCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authApi.getProfile(); 
-      console.log(      "Current user data:", response.data);
-      return response.data.data;
-      
+      const response = await authApi.getProfile(); // Gọi API để lấy thông tin người dùng
+      console.log("Current user data:", response.data);
+      return response.data.data; // Trả về thông tin người dùng hiện tại
     } catch (error) {
       return rejectWithValue(error.response?.data?.Message || "Failed to fetch user");
     }
@@ -55,8 +50,8 @@ export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await authApi.logout(); 
-      return true;
+      await authApi.logout(); // Gọi API để đăng xuất người dùng
+      return true; // Đăng xuất thành công
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Logout failed");
     }
@@ -68,98 +63,126 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await authApi.register(formData); 
-      return response.data.data;
+      const response = await authApi.register(formData); // Gọi API đăng ký người dùng mới
+      return response.data.data; // Trả về dữ liệu người dùng mới
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Registration failed");
     }
   }
 );
 
-
+// API: Get Teachers
+export const getTeachers = createAsyncThunk(
+  "auth/getTeachers",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authApi.getTeachers(); // Gọi API lấy danh sách giáo viên
+      return response.data.data; // Trả về danh sách giáo viên
+    } catch (error) {
+      console.log("Get Teachers error:", error.response?.data);
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch teachers");
+    }
+  }
+);
 
 // Slice
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
-    accessToken: null,
-    refreshToken: null,
-    loading: false,
-    error: null,
+    user: null, // Thông tin người dùng
+    accessToken: null, // Token truy cập
+    refreshToken: null, // Token làm mới
+    loading: false, // Trạng thái loading chung
+    error: null, // Lỗi chung
+    teachers: [], // Danh sách giáo viên
+    loadingTeachers: false, // Trạng thái loading danh sách giáo viên
+    errorTeachers: null, // Lỗi khi lấy danh sách giáo viên
   },
   reducers: {
-      clearError: (state) => {
-      state.error = null;
+    clearError: (state) => {
+      state.error = null; // Xóa lỗi chung
     },
   },
   extraReducers: (builder) => {
     builder
       // Login
       .addCase(loginUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.loading = true; // Đang thực hiện login
+        state.error = null; // Reset lỗi khi login
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.accessToken = action.payload.accessToken;
-        state.error = null;
-        
+        state.loading = false; // Đã hoàn thành login
+        state.user = action.payload.user; // Lưu thông tin người dùng
+        state.accessToken = action.payload.accessToken; // Lưu access token
+        state.error = null; // Xóa lỗi khi login thành công
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.user = null;
-        state.accessToken = null;
+        state.loading = false; // Đã hoàn thành quá trình login
+        state.error = action.payload; // Lưu thông báo lỗi khi login thất bại
+        state.user = null; // Reset thông tin người dùng
+        state.accessToken = null; // Reset access token
       })
 
       // Get Current User
       .addCase(getCurrentUser.pending, (state) => {
-        state.loading = true;
+        state.loading = true; // Đang lấy thông tin người dùng
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.error = null;
-        
+        state.loading = false; // Hoàn thành lấy thông tin người dùng
+        state.user = action.payload; // Lưu thông tin người dùng
+        state.error = null; // Xóa lỗi nếu có
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.user = null;
+        state.loading = false; // Hoàn thành quá trình lấy thông tin người dùng
+        state.error = action.payload; // Lưu lỗi nếu có
+        state.user = null; // Reset thông tin người dùng
+      })
+
+      // Get Teachers
+      .addCase(getTeachers.pending, (state) => {
+        state.loadingTeachers = true; // Đang lấy danh sách giáo viên
+        state.errorTeachers = null; // Reset lỗi khi lấy giáo viên
+      })
+      .addCase(getTeachers.fulfilled, (state, action) => {
+        state.loadingTeachers = false; // Hoàn thành việc lấy danh sách giáo viên
+        state.teachers = action.payload; // Lưu danh sách giáo viên vào state
+        state.errorTeachers = null; // Xóa lỗi nếu có
+      })
+      .addCase(getTeachers.rejected, (state, action) => {
+        state.loadingTeachers = false; // Hoàn thành quá trình lấy danh sách giáo viên
+        state.errorTeachers = action.payload; // Lưu lỗi nếu có
+        state.teachers = []; // Reset danh sách giáo viên
       })
 
       // Logout
       .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.accessToken = null;
-        state.error = null;
-        localStorage.removeItem('accessToken');
+        state.user = null; // Đăng xuất thành công, reset thông tin người dùng
+        state.accessToken = null; // Reset access token
+        state.error = null; // Xóa lỗi nếu có
+        localStorage.removeItem('accessToken'); // Xóa token khỏi localStorage
       })
       .addCase(logoutUser.rejected, (state, action) => {
-        state.error = action.payload;
+        state.error = action.payload; // Lưu lỗi nếu logout thất bại
       })
 
       // Refresh Token
       .addCase(refreshUserToken.pending, (state) => {
-        state.loading = true;
+        state.loading = true; // Đang làm mới token
       })
       .addCase(refreshUserToken.fulfilled, (state, action) => {
-        state.loading = false;
-        state.accessToken = action.payload.accessToken;
-        state.refreshToken = action.payload.refreshToken;
-        state.user = action.payload.user;
-        state.error = null;
+        state.loading = false; // Hoàn thành việc làm mới token
+        state.accessToken = action.payload.accessToken; // Lưu token mới
+        state.refreshToken = action.payload.refreshToken; // Lưu refresh token mới
+        state.user = action.payload.user; // Lưu thông tin người dùng
+        state.error = null; // Xóa lỗi khi làm mới token thành công
       })
       .addCase(refreshUserToken.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.accessToken = null;
-        state.refreshToken = null;
-        state.user = null;
+        state.loading = false; // Hoàn thành quá trình làm mới token
+        state.error = action.payload; // Lưu lỗi nếu có
+        state.accessToken = null; // Reset access token
+        state.refreshToken = null; // Reset refresh token
+        state.user = null; // Reset thông tin người dùng
       });
-      
   }
 });
 

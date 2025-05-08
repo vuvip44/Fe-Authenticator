@@ -6,6 +6,7 @@ const authApi = {
   logout: () => axiosInstance.post("/user/logout"),
   refreshToken: () => axiosInstance.post("/user/refresh-token"),
   getProfile: () => axiosInstance.get("/user/me"), 
+  getTeachers: () => axiosInstance.get("/teachers"),
 };
 
 export default authApi;
