@@ -71,19 +71,7 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// API: Get Teachers
-export const getTeachers = createAsyncThunk(
-  "auth/getTeachers",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await authApi.getTeachers(); // Gọi API lấy danh sách giáo viên
-      return response.data.data; // Trả về danh sách giáo viên
-    } catch (error) {
-      console.log("Get Teachers error:", error.response?.data);
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch teachers");
-    }
-  }
-);
+
 
 // Slice
 const authSlice = createSlice({
@@ -94,9 +82,7 @@ const authSlice = createSlice({
     refreshToken: null, // Token làm mới
     loading: false, // Trạng thái loading chung
     error: null, // Lỗi chung
-    teachers: [], // Danh sách giáo viên
-    loadingTeachers: false, // Trạng thái loading danh sách giáo viên
-    errorTeachers: null, // Lỗi khi lấy danh sách giáo viên
+   // Lỗi khi lấy danh sách giáo viên
   },
   reducers: {
     clearError: (state) => {
@@ -138,21 +124,7 @@ const authSlice = createSlice({
         state.user = null; // Reset thông tin người dùng
       })
 
-      // Get Teachers
-      .addCase(getTeachers.pending, (state) => {
-        state.loadingTeachers = true; // Đang lấy danh sách giáo viên
-        state.errorTeachers = null; // Reset lỗi khi lấy giáo viên
-      })
-      .addCase(getTeachers.fulfilled, (state, action) => {
-        state.loadingTeachers = false; // Hoàn thành việc lấy danh sách giáo viên
-        state.teachers = action.payload; // Lưu danh sách giáo viên vào state
-        state.errorTeachers = null; // Xóa lỗi nếu có
-      })
-      .addCase(getTeachers.rejected, (state, action) => {
-        state.loadingTeachers = false; // Hoàn thành quá trình lấy danh sách giáo viên
-        state.errorTeachers = action.payload; // Lưu lỗi nếu có
-        state.teachers = []; // Reset danh sách giáo viên
-      })
+      
 
       // Logout
       .addCase(logoutUser.fulfilled, (state) => {

@@ -1,8 +1,8 @@
 import React from "react";
-import Header from "../../components/Header/Header";
+import Header from "../../Header/Header";
 import Styles from "./styles.module.scss"; 
 import { useNavigate } from "react-router-dom";
-import { checkAccessAndNavigate } from "../../utils/CheckAccessAndNavigate";
+import { checkAccessAndNavigate } from "../../../utils/CheckAccessAndNavigate";
 const HomePage = () => {
     const {homepage,content} = Styles;
     const navigate = useNavigate();
@@ -16,27 +16,39 @@ const HomePage = () => {
       <button
           onClick={() =>
             checkAccessAndNavigate({
-              endpoint: "/result/user", 
+              endpoint: "/students", 
               navigate,
-              successPath: "/role-user", 
+              successPath: "/all-students", 
             })
           }
         >
-          Truy cập user
+          Xem danh sách học sinh
         </button>
 
         <button
           onClick={() =>
             checkAccessAndNavigate({
-              endpoint: "/result/admin",
+              endpoint: "/teachers",
               navigate,
-              successPath: "/role-admin",
-              fallbackMessage: "Chỉ admin mới được truy cập trang này!",
+              successPath: "/all-teachers",
+              
             })
           }
         >
-          Truy cập admin
+          Xem danh sách giáo viên
         </button>
+        <button
+          onClick={() =>
+            checkAccessAndNavigate({
+              endpoint: "/teachers/my-students",
+              navigate,
+              successPath: "/my-students", // dẫn đến trang hiển thị danh sách học sinh
+            })
+          }
+        >
+          Xem danh sách lớp
+        </button>
+
     </div>
   );
 };

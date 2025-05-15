@@ -1,15 +1,17 @@
 // src/components/Register/Register.jsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser, clearError, getTeachers } from "../../redux/slices/authSlice";
+import { registerUser, clearError } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import Styles from "./styles.module.scss"; 
+import {getTeachers} from "../../redux/slices/teacherSlice"
+
 
 function Register() {
   const { container, errorp } = Styles;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, teachers } = useSelector((state) => state.auth);
+  const { loading, error, teachers } = useSelector((state) => state.teacher);
 
   const [formData, setFormData] = useState({
     fullname: "",
