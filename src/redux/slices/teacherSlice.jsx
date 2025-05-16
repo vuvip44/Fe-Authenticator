@@ -56,6 +56,19 @@ export const updateStudentScore = createAsyncThunk(
   }
 );
 
+export const getStudentStatistics = createAsyncThunk(
+  "teachers/getStudentStatistics",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await teacherApi.getStudentStatistics();
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Lỗi khi lấy thống kê");
+    }
+  }
+);
+
+
 
 const teacherSlice=createSlice({
     name:"teachers",
@@ -75,6 +88,11 @@ const teacherSlice=createSlice({
       updatingScore: false,
       updateScoreSuccess: false,
       errorUpdateScore: null,
+
+      studentStatistics: [],
+      loadingStatistics: false,
+      errorStatistics: null,
+
     },
 
     reducers: {
@@ -145,7 +163,22 @@ const teacherSlice=createSlice({
                   .addCase(updateStudentScore.rejected, (state, action) => {
                     state.updatingScore = false;
                     state.errorUpdateScore = action.payload;
-                  });
+                  })
+
+                  .addCase(getStudentStatistics.pending, (state) => {
+                  state.loadingStatistics = true;
+                  state.errorStatistics = null;
+                })
+                .addCase(getStudentStatistics.fulfilled, (state, action) => {
+                  state.loadingStatistics = false;
+                  state.studentStatistics = action.payload;
+                })
+                .addCase(getStudentStatistics.rejected, (state, action) => {
+                  state.loadingStatistics = false;
+                  state.errorStatistics = action.payload;
+                })
+;
+
                   
     }
 })
